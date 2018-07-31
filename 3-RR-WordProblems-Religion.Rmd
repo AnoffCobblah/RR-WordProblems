@@ -27,7 +27,7 @@ religionslurterm <- c("mick","redneck","kike","shylock")
 Again, we start working with the actual data once our terms are set. this time we'll have categories of term and slur. But in this particular case, we have no data and cannot test any further.
 
 ```{r word term religion term frequencies, eval=FALSE}
-    WPKWIC <- read.delim(paste0(getwd(),"/","Applications/Word-Problems/","wordproblemsKWIC.txt"), header = FALSE, sep="\t")
+    WPKWIC <- read.delim(paste0(getwd(),"/","Word-Problems-Data/","wordproblemsKWIC.txt"), header = FALSE, sep="\t")
     stemreligionterms <- unique(wordStem(religionterm))
     stemreligionslurterms <- unique(wordStem(religionslurterm))
     stemsearchedterms <- c(stemreligionterms,stemreligionslurterms)

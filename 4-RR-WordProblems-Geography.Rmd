@@ -29,7 +29,7 @@ nationterm2 <- c("selangor","sennar","septinsular","serbia","shilluk","siam","si
 Again, we start working with the actual data once our terms are set, and don't bother with categories.
 
 ```{r word problem nation term frequencies, eval=FALSE}
-    WPKWIC <- read.delim(paste0(getwd(),"/","Applications/Word-Problems/","wordproblemsKWIC.txt"), header = FALSE, sep="\t")
+    WPKWIC <- read.delim(paste0(getwd(),"/","Word-Problems-Data/","wordproblemsKWIC.txt"), header = FALSE, sep="\t")
     stemregionterm <- unique(wordStem(regionterm))
     stemnationalityterm <- unique(wordStem(nationalityterm))
     stemnationterm1 <- unique(wordStem(nationterm1))
@@ -77,7 +77,7 @@ Again, we start working with the actual data once our terms are set, and don't b
 As usual, you might want to save this data. You can do so using the script below.
 
 ```{r save word problem nation, eval=FALSE}
-    tempname <- paste0(getwd(),"/","Applications/Word-Problems/","WPdata-nation.txt")
+    tempname <- paste0(getwd(),"/","Word-Problems-Data/","WPdata-nation.txt")
     write.table(WPWPnationdatadf, file=tempname)
 ```
 
@@ -90,14 +90,3 @@ And we can quickly visualize the counts by using ggplot. France is far and away 
       print(pl)
 ```
 
-In order to determine and visualize the terms with our searched terms in the text, we'll be using the quanteda package. However, without categories, this can get a bit unwieldy. the textplot_wordcloud function works best with under 3 categories. So in the example below, I've used the subset funtion just to compare the context of French and English. The results are a bit disappointing.
-
-
-```{r word problems nation associations, eval=FALSE}
-corpus <- corpus(subset(WPWPnationdatadf,WPWPnationdatadf$stemsearchedterm %in% c("french","english")), 
-                 docid_field="Word_Problem_ID", 
-                 text_field="Word_Problem")
-summary(corpus,3)
-group_WPracedfm <- dfm(corpus, remove=c(stopwords("en"),raceterms), remove_punct=TRUE, remove_numbers = TRUE, groups="stemsearchedterm")
-textplot_wordcloud(group_WPracedfm,max.words=50, colors = RColorBrewer::brewer.pal(8,"Dark2"), comparison=TRUE)
-```

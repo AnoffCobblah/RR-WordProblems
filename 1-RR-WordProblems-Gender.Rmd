@@ -32,7 +32,7 @@ mascterms <- c("boy","boys","he","father", "gentleman", "gentlemen", "him", "him
 With parameters set, we can start working with the actual data.
 
 ```{r word probem gender term frequencies, eval=FALSE}
-    WPKWIC <- read.delim(paste0(getwd(),"/","Applications/Word-Problems/","wordproblemsKWIC.txt"), header = FALSE, sep="\t")
+    WPKWIC <- read.delim(paste0(getwd(),"/","Word-Problems-Data/","wordproblemsKWIC.txt"), header = FALSE, sep="\t")
     stemmascterms <- unique(wordStem(mascterms))
     stemfemterms <- unique(wordStem(femterms))
     stemneutralterms <- unique(wordStem(neutralterms))
@@ -80,7 +80,7 @@ With parameters set, we can start working with the actual data.
 As usual, you might want to save this data. You can do so using the script below.
 
 ```{r save word problem gender, eval=FALSE}
-    tempname <- paste0(getwd(),"/","Applications/Word-Problems/","WPdata-gender.txt")
+    tempname <- paste0(getwd(),"/","Word-Problems-Data/","WPdata-gender.txt")
     write.table(WPgenderdatadf, file=tempname)
 ```
 

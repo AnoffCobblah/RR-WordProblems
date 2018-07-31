@@ -23,7 +23,7 @@ raceterms <- c("ape","black","negro","african","african american","african-ameri
 Again, we start working with the actual data once our terms are set. However, unlike the previous entry, we won't bother separating the terms into category.
 
 ```{r word term race term frequencies, eval=FALSE}
-    WPKWIC <- read.delim(paste0(getwd(),"/","Applications/Word-Problems/","wordproblemsKWIC.txt"), header = FALSE, sep="\t")
+    WPKWIC <- read.delim(paste0(getwd(),"/","Word-Problems-Data/","wordproblemsKWIC.txt"), header = FALSE, sep="\t")
     stemraceterms <- unique(wordStem(raceterms))
     stemsearchedterms <- stemraceterms
     lemma <- list()
@@ -67,7 +67,7 @@ Again, we start working with the actual data once our terms are set. However, un
 As usual, you might want to save this data. You can do so using the script below.
 
 ```{r save word problem race, eval=FALSE}
-    tempname <- paste0(getwd(),"/","Applications/Word-Problems/","WPdata-race.txt")
+    tempname <- paste0(getwd(),"/","Word-Problems-Data/","WPdata-race.txt")
     write.table(WPracedatadf, file=tempname)
 ```
 

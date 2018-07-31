@@ -1,0 +1,71 @@
+
+---
+title: '3-RR-WordProblems-Religion'
+author: "Anoff Nicholas Cobblah"
+date: "December 16, 2017"
+output:
+  html_document:
+    number_sections: yes
+    toc: true
+    toc_depth: 6
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Religion in 19th Century Word Problems
+
+Something similar to "1-RR-WordProblems-Gender.Rmd" can of course be done with religion as well, although again we lack easy categories.
+
+```{r religion word problems}
+religionterm <- c("christian","muslim","jewish","buddhist","atheist","protestant","catholic","mahometan","european","mormon","quaker","high church","papist","pagan","agnostic","deist","spiritualist","unitarian","evangelical","tractarian","baptist","lutheran","congregationalist","presbyterian","puritan","anglican")
+religionslurterm <- c("mick","redneck","kike","shylock")
+```
+
+Again, we start working with the actual data once our terms are set. this time we'll have categories of term and slur. But in this particular case, we have no data and cannot test any further.
+
+```{r word term religion term frequencies, eval=FALSE}
+    WPKWIC <- read.delim(paste0(getwd(),"/","Applications/Word-Problems/","wordproblemsKWIC.txt"), header = FALSE, sep="\t")
+    stemreligionterms <- unique(wordStem(religionterm))
+    stemreligionslurterms <- unique(wordStem(religionslurterm))
+    stemsearchedterms <- c(stemreligionterms,stemreligionslurterms)
+    lemma <- list()
+    data <- matrix(,ncol=5,nrow=1)
+    colnames(data) <- c("Word_Problem_ID","stemsearchedterm","Lemma","Category","Word_Problem")
+      for (p in 1:length(stemsearchedterms)) {
+        iterp <- 1
+        tempdata <- matrix(,ncol=5,nrow=1) #this matrix is supposed to get wiped every loop.
+        for (i in 1:nrow(WPKWIC)) {
+          ltoken <- tokenize_words(as.vector(WPKWIC[i,]), lowercase = TRUE, stopwords = NULL, simplify = FALSE)
+          ltoken <- unlist(ltoken)
+          stemltoken <- wordStem(ltoken)
+          for (w in 1:length(ltoken)) {
+            if(stemltoken[w] == stemsearchedterms[p]) {
+              lemma[[iterp]] <- w
+              iterp <- iterp+1
+            }
+          }
+          lemma <- unlist(lemma)
+          #Now it's time to start adding what we've found for this document into our data matrix.
+            mat <- matrix(,ncol=5,nrow=length(lemma)) #for documents with no matches, mat will have no rows, which is perfect.
+            mat[,1] <- i
+            mat[,2] <- stemsearchedterms[p]
+            mat[,3] <- lemma
+              if(stemsearchedterms[p] %in% stemreligionterms) {mat[,4] <- "term"}
+              if(stemsearchedterms[p] %in% religionslurterm) {mat[,4] <- "slur"}
+            mat[,5] <- as.character(WPKWIC[i,])
+            tempdata <- rbind(tempdata,mat)
+            lemma <- list()
+            lemma_perc <- list()
+        }
+          tempdata <- tempdata[-1,]
+          data <- rbind(data,tempdata)
+      }
+    WPreligiondata <- data[-1,]
+    WPreligiondatadf <- as.data.frame(WPreligiondata)
+    WPreligiondatadf$Word_Problem <- as.character(WPreligiondatadf$Word_Problem) #need this column to be a character column for below
+    WPreligiondatadf$Word_Problem_ID <- as.character(WPreligiondatadf$Word_Problem_ID) #need this column to be a character column for below
+    WPreligiondatadf
+```

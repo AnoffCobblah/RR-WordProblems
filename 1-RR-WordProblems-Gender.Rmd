@@ -1,0 +1,105 @@
+---
+title: '1-RR-WordProblems-Gender'
+author: "Anoff Nicholas Cobblah"
+date: "December 16, 2017"
+output:
+  html_document:
+    number_sections: yes
+    toc: true
+    toc_depth: 6
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE)
+```
+
+*********************************************************************************************************************************************
+*********************************************************************************************************************************************
+*********************************************************************************************************************************************
+
+### Gender in 19th Century Word Problems
+Often those in the humanities want to investigate texts through the lens of gender, race, geography, religion, or other markers of identity. For this project, I was investigating J. Hamblin Smith's *A Treatise on Arithmetic* (1883) as representative of the kind of popular textbooks which frequently published mathematical word problems in the nineteenth century. Rather than running my Key Words in Context script, I completed this step manually, isolating those word problems which included human characters who would have identity markers.
+
+The script below counts the number of times gendered terms appear in the corpus. Of course, researchers are probably more interested in the appearance of "she" and "her" as belonging to a group of feminine terms than as individual terms. So this script adds a new section to the output of the word flag script: category.  Category allows these terms to be combined as one variable. From this information, we can discover not only that masculine characters are FAR more prevalent in these word problems (providing a skewed representation of the "reality" word problems are supposed to reflect), but also what terms are most associated with the masculine, feminine, and gender neutral characters.
+
+First we set a number of terms which we take to signal gender:
+```{r word terms gender)}
+mascterms <- c("boy","boys","he","father", "gentleman", "gentlemen", "him", "himself", "his","husband", "male", "man", "men", "mr","son","sons")
+    femterms <- c("daughter","daughters","female","girl","girls","her","hers","herself","ladies","lady","miss","mother","mrs","ms","she","wife","woman","women")
+    neutralterms <- c("i","it","its","mine","my","people","person")
+```
+
+With parameters set, we can start working with the actual data.
+
+```{r word probem gender term frequencies, eval=FALSE}
+    WPKWIC <- read.delim(paste0(getwd(),"/","Applications/Word-Problems/","wordproblemsKWIC.txt"), header = FALSE, sep="\t")
+    stemmascterms <- unique(wordStem(mascterms))
+    stemfemterms <- unique(wordStem(femterms))
+    stemneutralterms <- unique(wordStem(neutralterms))
+    stemsearchedterms <- c(stemmascterms,stemfemterms,stemneutralterms)
+    lemma <- list()
+    data <- matrix(,ncol=5,nrow=1)
+    colnames(data) <- c("Word_Problem_ID","stemsearchedterm","Lemma","Category","Word_Problem")
+      for (p in 1:length(stemsearchedterms)) {
+        iterp <- 1
+        tempdata <- matrix(,ncol=5,nrow=1) #this matrix is supposed to get wiped every loop.
+        for (i in 1:nrow(WPKWIC)) {
+          ltoken <- tokenize_words(as.vector(WPKWIC[i,]), lowercase = TRUE, stopwords = NULL, simplify = FALSE)
+          ltoken <- unlist(ltoken)
+          stemltoken <- wordStem(ltoken)
+          for (w in 1:length(ltoken)) {
+            if(stemltoken[w] == stemsearchedterms[p]) {
+              lemma[[iterp]] <- w
+              iterp <- iterp+1
+            }
+          }
+          lemma <- unlist(lemma)
+          #Now it's time to start adding what we've found for this document into our data matrix.
+            mat <- matrix(,ncol=5,nrow=length(lemma)) #for documents with no matches, mat will have no rows, which is perfect.
+            mat[,1] <- i
+            mat[,2] <- stemsearchedterms[p]
+            mat[,3] <- lemma
+              if(stemsearchedterms[p] %in% stemmascterms) {mat[,4] <- "masculine"}
+              if(stemsearchedterms[p] %in% stemfemterms) {mat[,4] <- "feminine"}
+              if(stemsearchedterms[p] %in% stemneutralterms) {mat[,4] <- "neutral"}
+            mat[,5] <- as.character(WPKWIC[i,])
+            tempdata <- rbind(tempdata,mat)
+            lemma <- list()
+            lemma_perc <- list()
+        }
+          tempdata <- tempdata[-1,]
+          data <- rbind(data,tempdata)
+      }
+    WPgenderdata <- data[-1,]
+    WPgenderdatadf <- as.data.frame(WPgenderdata)
+    WPgenderdatadf$Word_Problem <- as.character(WPgenderdatadf$Word_Problem) #need this column to be a character column for below
+    WPgenderdatadf$Word_Problem_ID <- as.character(WPgenderdatadf$Word_Problem_ID) #need this column to be a character column for below
+    WPgenderdatadf
+```
+
+As usual, you might want to save this data. You can do so using the script below.
+
+```{r save word problem gender, eval=FALSE}
+    tempname <- paste0(getwd(),"/","Applications/Word-Problems/","WPdata-gender.txt")
+    write.table(WPgenderdatadf, file=tempname)
+```
+
+And we can quickly visualize the counts by using ggplot.
+
+```{r word problem gender visualize, eval=FALSE}
+    p <- ggplot(WPgenderdatadf, mapping = aes(x = Category))
+      pg <- geom_bar()
+      pl <- p + pg + labs(x = "Text", title =  "Gender Categories by Term in Word Problems")
+      print(pl)
+```
+
+In order to determine and visualize the terms associated with masculine and feminine terms in the text, we'll be using the quanteda package.
+
+```{r word problems gender associations, eval=FALSE}
+corpus <- corpus(WPgenderdatadf, 
+                 docid_field="Word_Problem_ID", 
+                 text_field="Word_Problem")
+summary(corpus,3)
+group_WPgenderdfm <- dfm(corpus, remove=c(stopwords("en"),mascterms,femterms,neutralterms), remove_punct=TRUE, remove_numbers = TRUE, groups="Category")
+textplot_wordcloud(group_WPgenderdfm,max.words=50, colors = RColorBrewer::brewer.pal(8,"Dark2"), comparison=TRUE)
+```

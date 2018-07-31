@@ -1,0 +1,92 @@
+
+---
+title: '2-RR-WordProblems-Race'
+author: "Anoff Nicholas Cobblah"
+date: "December 16, 2017"
+output:
+  html_document:
+    number_sections: yes
+    toc: true
+    toc_depth: 6
+
+---
+
+
+### Race in 19th Century Word Problems
+
+Something similar to "1-RR-WordProblems-Gender.Rmd" can of course be done with race, (although it lacks the simple tri-part categories of gender).
+
+```{r race word problems}
+raceterms <- c("ape","black","negro","african","african american","african-american","mulatto","quadroon","chinaman","chink","oriental","asian","jew","jewish","coon","sambo","eskimo","indian","native american","quashee","frog","injun","paddy","kaffir","nigger","white","quashie","redskin","shylock","taffy","teuchter","turk","tom","white trash","wog","yank","arab","arabian","yellow","bushman","negrito","negritoes","bushmen","melanchroi","moor","hamite","australoid","xanthochroi","polynesian","mongoloid","esquimaux","caucasian","asiasic","saxon","anglo-saxon","norman","scandanavian","gipsy","gipsey","coptic","celtic","slavonian","german","germanic","sarmatian","hottentot","caffres","bosjeman","barbarian","savage","cannibal","gyp","pygmy","tartar")
+```
+
+Again, we start working with the actual data once our terms are set. However, unlike the previous entry, we won't bother separating the terms into category.
+
+```{r word term race term frequencies, eval=FALSE}
+    WPKWIC <- read.delim(paste0(getwd(),"/","Applications/Word-Problems/","wordproblemsKWIC.txt"), header = FALSE, sep="\t")
+    stemraceterms <- unique(wordStem(raceterms))
+    stemsearchedterms <- stemraceterms
+    lemma <- list()
+    data <- matrix(,ncol=5,nrow=1)
+    colnames(data) <- c("Word_Problem_ID","stemsearchedterm","Lemma","Category","Word_Problem")
+      for (p in 1:length(stemsearchedterms)) {
+        iterp <- 1
+        tempdata <- matrix(,ncol=5,nrow=1) #this matrix is supposed to get wiped every loop.
+        for (i in 1:nrow(WPKWIC)) {
+          ltoken <- tokenize_words(as.vector(WPKWIC[i,]), lowercase = TRUE, stopwords = NULL, simplify = FALSE)
+          ltoken <- unlist(ltoken)
+          stemltoken <- wordStem(ltoken)
+          for (w in 1:length(ltoken)) {
+            if(stemltoken[w] == stemsearchedterms[p]) {
+              lemma[[iterp]] <- w
+              iterp <- iterp+1
+            }
+          }
+          lemma <- unlist(lemma)
+          #Now it's time to start adding what we've found for this document into our data matrix.
+            mat <- matrix(,ncol=5,nrow=length(lemma)) #for documents with no matches, mat will have no rows, which is perfect.
+            mat[,1] <- i
+            mat[,2] <- stemsearchedterms[p]
+            mat[,3] <- lemma
+            mat[,4] <- NA
+            mat[,5] <- as.character(WPKWIC[i,])
+            tempdata <- rbind(tempdata,mat)
+            lemma <- list()
+            lemma_perc <- list()
+        }
+          tempdata <- tempdata[-1,]
+          data <- rbind(data,tempdata)
+      }
+    WPracedata <- data[-1,]
+    WPracedatadf <- as.data.frame(WPracedata)
+    WPracedatadf$Word_Problem <- as.character(WPracedatadf$Word_Problem) #need this column to be a character column for below
+    WPracedatadf$Word_Problem_ID <- as.character(WPracedatadf$Word_Problem_ID) #need this column to be a character column for below
+    WPracedatadf
+```
+
+As usual, you might want to save this data. You can do so using the script below.
+
+```{r save word problem race, eval=FALSE}
+    tempname <- paste0(getwd(),"/","Applications/Word-Problems/","WPdata-race.txt")
+    write.table(WPracedatadf, file=tempname)
+```
+
+And we can quickly visualize the counts by using ggplot.
+
+```{r word problem race visualize, eval=FALSE}
+    p <- ggplot(WPracedatadf, mapping = aes(x = stemsearchedterm))
+      pg <- geom_bar()
+      pl <- p + pg + labs(x = "Searched Term (stemmed)", title =  "Racial Terms in Word Problems")
+      print(pl)
+```
+
+In order to determine and visualize the terms with our searched terms in the text, we'll be using the quanteda package. However, without categories, this can get a bit unwieldy. the textplot_wordcloud function works best with under 3 categories. So in the example below, I've used the subset funtion just to compare the context of Arab and German. **We do learn something here: that "German" is referenced more in the context of Europe and money, while "Arab" is mentioned in the context of travel.**
+
+```{r word problems race associations, eval=FALSE}
+corpus <- corpus(subset(WPracedatadf,WPracedatadf$stemsearchedterm %in% c("arab","german")), 
+                 docid_field="Word_Problem_ID", 
+                 text_field="Word_Problem")
+summary(corpus,3)
+group_WPracedfm <- dfm(corpus, remove=c(stopwords("en"),raceterms), remove_punct=TRUE, remove_numbers = TRUE, groups="stemsearchedterm")
+textplot_wordcloud(group_WPracedfm,max.words=50, colors = RColorBrewer::brewer.pal(8,"Dark2"), comparison=TRUE)
+```

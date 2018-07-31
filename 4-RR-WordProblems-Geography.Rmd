@@ -1,0 +1,103 @@
+---
+title: '4-RR-WordProblems-Geography'
+author: "Anoff Nicholas Cobblah"
+date: "December 16, 2017"
+output:
+  html_document:
+    number_sections: yes
+    toc: true
+    toc_depth: 6
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Geography in 19th Century Word Problems
+
+This is the most ambitious of the word problem searches, as there are so many possibilities that the searched term list had to be broken into multiple vectors.
+
+
+```{r word term region}
+
+regionterm <- c("americas","north america","south america","central america","asia","orient","crimea","mediterranean","baltic","africa","colonies","atlantic","pacific","east","west","north","south","arctic","europe")
+nationalityterm <- c("afghan", "algerian", "american", "argentinian", "australian", "austrian", "bahaman", "belgian", "bohemian","bolivian","brazilian","british","bulgarian","californian","canadian","chilean","chinese","confederate","costa rican","cuban","egyptian","english","ethiope","ethiopian","fijian","floridian","frank","french","german","greek","guatemalan","hatian","hawaiin","hungarian","indian","irish","italian","japanese","korean","liberian","mexican","moroccan","peruvian","portuguese","prussian","roman","romanian","russian","scottish","sicilian","south african","spanish","sudanese","swedish","swiss","tahitian","tunesian","tuscan","venezuelan","welsh","yankee")
+nationterm1 <- c("aceh","acre","afghanistan","ahom","ajaigarh","algarves","algeria","alipura","alirajpur","alsace-lorraine","alwar","andorra","angoche","angola","anhalt","anhalt-bernburg","anhalt-dessau","anhalt-k?then","ankole","annam","antigua","anziku","araucan?a","argentina","argentine","aro confederacy","aschaffenburg","ashanti","athgarh","aussa","australia","austria","austria-hungary","austrian","baden","baguirmi","bahamas","bamana","banten","baol","barbados","barotseland","basutoland","batavian","bat?","bavaria","bechuanaland","beihan","belgium","benin","berg","bhutan","bhutan","bohemia","bolivia","bora bora","bornu","bourbon","bourbon spain","brazil","bremen","bruneian","brunswick","brunswick-l?neburg","buganda","bukhara","bulgaria","bundu","bunyoro","burma","burundi","california","cambodia","canada","cape colony","cape verde","carrara","cayor","central america","ceylon","chad","champa","champasak","chan santa cruz","cherokee nation","chile","china","cisalpine","cochin","cochinchina","colombia","comoros","confederate states","congo","cook islands","cospaia","costa rica","croatia","croatia-slavonia","cuba","dahomey","damagaram","darfur","dendi","denmark","denmark-norway","dhala","diriyah","dominica","dominican","durrani","dutch cape colony","east indies","easter island","ecuador","egypt","el salvador","elba","england","ethiopia","etruria","ezo","fante","fiji","finland","first hellenic","formosa","france","frankfurt","french","futa jallon","futa toro","galicia","gambia","garhwal","garo","gaza","genoa","german","german south-west africa","germany","gilbert and ellice islands","gomma","governorate of estonia","gozo","gran colombia","granadine","great britain","greece","guatemala","guiana","guinea","gumma","gyaaman","habsburg monarchy","haiti","hamburg","hanover","hawaii","helvetic","hesse","hesse-darmstadt","hesse-homburg","hobyo","hohenzollern-hechingen","hohenzollern-sigmaringen","holland","holstein","holy roman","honduras","huahine","hungary","huraa dynasty","hyderabad","illyrian provinces","imereti","india","ionian islands","ireland","italian","italy","jabal shammar","jaisalme","jammu","janjero","japan","jimma","johor","jolof","joseon","kaabu","kaarta","kaffa","kamerun","kano","kasanje","kashmir","kazakh khanate","kazembe","k?n?dougou","kharan","khasso","khiva","kokand","konbaung dynasty","kong","kongo","korea","kosovo vilayet","koya","krak?w","kuba","kuwait","lanfang","las bela","leyen","liberia","liechtenstein","liga federal","ligurian","limmu-ennarea","lippe","loango","lodomeria","lombardy-venetia","luba","l?beck","lucca","lunda","luxembourg","maguindanao","mainz","majeerteen","makran","malay","malta","mangareva","manipur","manitoba","maratha","maravi","maryland","massa","massina","mecklenburg-schwerin","mecklenburg-strelitz","medri bahri","merina","mexican","mexico","modena","moldavia","moldavia","monaco","montenegro","morocco","mosquito coast","mossis","mozambique","mthethwa paramountcy","mthwakazi","mughal","muscat","muskogee","mysore","naples","nassau","natal","nejd","nepal","netherlands","new granada","new guinea","new zealand ","nguyen dynasty","nicaragua","nieuwe republiek","niue","niuean monarchy","north borneo","north german","norway","nri","oldenburg","oman","orange","orungu","ottoman","ouaddai","oyo","pahang","papal states","papua","paraguay","parma","pashalik of timbuktu","patagonia","pattani","perak","persia","peru","peru-bolivian","portugal","pr?ncipe","prussia","qing dynasty","ragusa","raiatea","rarotonga","regensburg","reggio","reuss","reuss-ebersdorf","reuss-gera","reuss-greiz","reuss-lobenstein","rhodesia","roman","romania","roquebrune-cap-martin","rozwi","russian","rwanda","ryukyu","sahara","saint lucia","saint vincent and the grenadines","saint-domingue","samao","samoa","san marino","s?o tom?","sarawak","sardinia","saxe-altenburg","saxe-coburg and gotha","saxe-coburg-saalfeld","saxe-gotha-altenburg","saxe-hildburghausen","saxe-lauenburg","saxe-meiningen","saxe-weimar-eisenach","saxony","schaumburg-lippe","schleswig","schwarzburg-rudolstadt","schwarzburg-sondershausen","scotland","sedang")
+nationterm2 <- c("selangor","sennar","septinsular","serbia","shilluk","siam","sicily","sierra leone","sikh","sikkim","sine","sirmoor","sokoto caliphate","solomon islands","somaliland","sonora","soran","south africa","spain","straits","sudan","sulu","surinam","swaziland","sweden","swiss","switzerland","tahiti","texas","the maldives","the netherlands","the rhine","the r?o de la plata","the rio grande","the river plate","the two sicilies","timor","tobago","togoland","tokugawa","tonga","tonkin","toucouleur","transvaal colony","travancore","tridentum","trinidad","trucial","tuscany","united states","upper aulaqi","upper yafa","uruguay","venezuela","wadai","wahidi balhaf","wahidi haban","waldeck","wales","wallachia","warsangali","warsaw","wassoulou","welayta","west africa","west florida","westphalia","wituland","w?rttemberg","w?rzburg","yeke","yucat?n","zanzibar","zulu")
+```
+
+Again, we start working with the actual data once our terms are set, and don't bother with categories.
+
+```{r word problem nation term frequencies, eval=FALSE}
+    WPKWIC <- read.delim(paste0(getwd(),"/","Applications/Word-Problems/","wordproblemsKWIC.txt"), header = FALSE, sep="\t")
+    stemregionterm <- unique(wordStem(regionterm))
+    stemnationalityterm <- unique(wordStem(nationalityterm))
+    stemnationterm1 <- unique(wordStem(nationterm1))
+    stemnnationterm2 <- unique(wordStem(nationterm2))
+    stemsearchedterms <- c(stemregionterm,stemnationalityterm,stemnationterm1,stemnnationterm2)
+
+    lemma <- list()
+    data <- matrix(,ncol=5,nrow=1)
+    colnames(data) <- c("Word_Problem_ID","stemsearchedterm","Lemma","Category","Word_Problem")
+      for (p in 1:length(stemsearchedterms)) {
+        iterp <- 1
+        tempdata <- matrix(,ncol=5,nrow=1) #this matrix is supposed to get wiped every loop.
+        for (i in 1:nrow(WPKWIC)) {
+          ltoken <- tokenize_words(as.vector(WPKWIC[i,]), lowercase = TRUE, stopwords = NULL, simplify = FALSE)
+          ltoken <- unlist(ltoken)
+          stemltoken <- wordStem(ltoken)
+          for (w in 1:length(ltoken)) {
+            if(stemltoken[w] == stemsearchedterms[p]) {
+              lemma[[iterp]] <- w
+              iterp <- iterp+1
+            }
+          }
+          lemma <- unlist(lemma)
+          #Now it's time to start adding what we've found for this document into our data matrix.
+            mat <- matrix(,ncol=5,nrow=length(lemma)) #for documents with no matches, mat will have no rows, which is perfect.
+            mat[,1] <- i
+            mat[,2] <- stemsearchedterms[p]
+            mat[,3] <- lemma
+            mat[,4] <- NA
+            mat[,5] <- as.character(WPKWIC[i,])
+            tempdata <- rbind(tempdata,mat)
+            lemma <- list()
+            lemma_perc <- list()
+        }
+          tempdata <- tempdata[-1,]
+          data <- rbind(data,tempdata)
+      }
+    WPnationdata <- data[-1,]
+    WPWPnationdatadf <- as.data.frame(WPnationdata)
+    WPWPnationdatadf$Word_Problem <- as.character(WPWPnationdatadf$Word_Problem) #need this column to be a character column for below
+    WPWPnationdatadf$Word_Problem_ID <- as.character(WPWPnationdatadf$Word_Problem_ID) #need this column to be a character column for below
+    WPWPnationdatadf
+```
+
+As usual, you might want to save this data. You can do so using the script below.
+
+```{r save word problem nation, eval=FALSE}
+    tempname <- paste0(getwd(),"/","Applications/Word-Problems/","WPdata-nation.txt")
+    write.table(WPWPnationdatadf, file=tempname)
+```
+
+And we can quickly visualize the counts by using ggplot. France is far and away the winner. A little thought reveals that "acr" is a false datapoint, referring not the the nation but to the unit of measure.
+
+```{r word problem nation visualize, eval=FALSE}
+    p <- ggplot(WPWPnationdatadf, mapping = aes(x = stemsearchedterm))
+      pg <- geom_bar()
+      pl <- p + pg + labs(x = "Nation", title =  "Racial Terms in Word Problems") +coord_flip()
+      print(pl)
+```
+
+In order to determine and visualize the terms with our searched terms in the text, we'll be using the quanteda package. However, without categories, this can get a bit unwieldy. the textplot_wordcloud function works best with under 3 categories. So in the example below, I've used the subset funtion just to compare the context of French and English. The results are a bit disappointing.
+
+
+```{r word problems nation associations, eval=FALSE}
+corpus <- corpus(subset(WPWPnationdatadf,WPWPnationdatadf$stemsearchedterm %in% c("french","english")), 
+                 docid_field="Word_Problem_ID", 
+                 text_field="Word_Problem")
+summary(corpus,3)
+group_WPracedfm <- dfm(corpus, remove=c(stopwords("en"),raceterms), remove_punct=TRUE, remove_numbers = TRUE, groups="stemsearchedterm")
+textplot_wordcloud(group_WPracedfm,max.words=50, colors = RColorBrewer::brewer.pal(8,"Dark2"), comparison=TRUE)
+```
